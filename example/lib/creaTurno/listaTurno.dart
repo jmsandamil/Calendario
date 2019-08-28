@@ -1,10 +1,15 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:table_calendar_example/add_Turno/add_dialog.dart';
+import 'package:table_calendar_example/add_Turno/dialogs.dart';
+import 'package:table_calendar_example/home.dart';
+import 'package:table_calendar_example/models/turno.dart';
 import 'package:table_calendar_example/util/database.dart';
-import 'package:table_calendar_example/creaTurno/turno.dart';
 import 'package:table_calendar_example/creaTurno/crearTurno.dart';
 import 'package:sqflite/sqflite.dart';
+
+import '../home.dart';
 
 Future<List<Turno>> fetchTurnosFromDatabase() async {
   Database db = await openDb();
@@ -18,6 +23,9 @@ class TurnosList extends StatefulWidget {
 }
 
 class TurnosListState extends State<TurnosList> {
+
+   List<Turno> turno2;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,10 +47,9 @@ class TurnosListState extends State<TurnosList> {
                         leading: Icon(Icons.album,
                             color: snapshot.data[index].color),
                         title: Text(
-                            snapshot.data[index].name,
+                          snapshot.data[index].name,
                           style: TextStyle(
-                              fontSize: 22,
-                              color: snapshot.data[index].color),
+                              fontSize: 22, color: snapshot.data[index].color),
                         ),
                         onTap: () {
                           Navigator.push(
@@ -52,6 +59,21 @@ class TurnosListState extends State<TurnosList> {
                                     TurnoForm(snapshot.data[index])),
                           );
                         },
+                        trailing: Container(
+                            child: new IconButton(
+                          icon: new Icon(Icons.add),
+                           onPressed: () async {
+
+                                    
+
+                                
+                                        await Dialogs.showAddToCalendar(context);
+                            setState(() {});
+                                      
+                           
+                          
+                          },
+                        )),
                       );
                     });
               } else {

@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:path/path.dart';
-import 'package:table_calendar_example/creaTurno/turno.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:table_calendar_example/models/turno.dart';
 
 Future<String> _initDb(String dbName) async {
   var databasePath = await getDatabasesPath();

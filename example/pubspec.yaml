@@ -23,6 +23,9 @@ dependencies:
   sqflite: 1.1.6+3
   flutter_colorpicker: 0.2.6
   provider: any
+  rflutter_alert: ^1.0.3
+  path_provider: ^1.2.0
+  flutter_picker: ^1.0.13
 
 
 

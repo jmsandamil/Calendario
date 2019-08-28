@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import 'package:table_calendar_example/creaTurno/listaTurno.dart';
-import 'package:table_calendar_example/add_Turno/addTurnoView.dart';
-
+//import 'package:table_calendar_example/add_Turno/addTurnoView.dart';
 
 // Example holidays
 final Map<DateTime, List> _holidays = {
@@ -13,7 +12,6 @@ final Map<DateTime, List> _holidays = {
   DateTime(2019, 4, 21): ['Easter Sunday'],
   DateTime(2019, 4, 22): ['Easter Monday'],
 };
-
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -30,17 +28,23 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   AnimationController _animationController;
   CalendarController _calendarController;
 
+  Color color;
+
   @override
   void initState() {
     super.initState();
     final _selectedDay = DateTime.now();
 
     _events = {
-
-      _selectedDay.subtract(Duration(days: 2)): ['Event A6', 'Event B6'],
-      _selectedDay.add(Duration(days: 1)): ['Event A8', 'Event B8', 'Event C8', 'Event D8'],
-      _selectedDay.add(Duration(days: 3)): Set.from(['Event A9', 'Event A9', 'Event B9']).toList(),
-
+      DateTime(2019, 8, 20): [
+        Event(text: 'Event A0', status: EventStatus.morning),
+      ],
+      DateTime(2019, 8, 21): [
+        Event(text: 'Event A1', status: EventStatus.tarde),
+      ],
+      DateTime(2019, 8, 22): [
+        Event(text: 'Event A2', status: EventStatus.noche),
+      ],
     };
 
     _selectedEvents = _events[_selectedDay] ?? [];
@@ -69,7 +73,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     });
   }
 
-  void _onVisibleDaysChanged(DateTime first, DateTime last, CalendarFormat format) {
+  void _onVisibleDaysChanged(
+      DateTime first, DateTime last, CalendarFormat format) {
     print('CALLBACK: _onVisibleDaysChanged');
   }
 
@@ -83,26 +88,22 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           IconButton(
               icon: Icon(Icons.featured_play_list),
               onPressed: () {
-                Navigator.push(context, new MaterialPageRoute(builder: (context) => TurnosList()));
+                Navigator.push(context,
+                    new MaterialPageRoute(builder: (context) => TurnosList()));
               })
         ],
-
       ),
-
-
-
       body: Column(
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
           // Switch out 2 lines below to play with TableCalendar's settings
           //-----------------------
           //_buildTableCalendar(),
-           _buildTableCalendarWithBuilders(),
+          _buildTableCalendarWithBuilders(),
           const SizedBox(height: 8.0),
           Expanded(child: _buildEventList()),
         ],
       ),
-
       floatingActionButton: FloatingActionButton(
         onPressed: () {
 //          Navigator.push(
@@ -114,31 +115,6 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         tooltip: 'Añadir Turno',
         child: Icon(Icons.add),
       ),
-    );
-  }
-
-  // Simple TableCalendar configuration (using Styles)
-  Widget _buildTableCalendar() {
-    return TableCalendar(
-      calendarController: _calendarController,
-      events: _events,
-      holidays: _holidays,
-      startingDayOfWeek: StartingDayOfWeek.monday,
-      calendarStyle: CalendarStyle(
-        selectedColor: Colors.deepOrange[400],
-        todayColor: Colors.deepOrange[200],
-        markersColor: Colors.brown[700],
-        outsideDaysVisible: false,
-      ),
-      headerStyle: HeaderStyle(
-        formatButtonTextStyle: TextStyle().copyWith(color: Colors.white, fontSize: 15.0),
-        formatButtonDecoration: BoxDecoration(
-          color: Colors.deepOrange[400],
-          borderRadius: BorderRadius.circular(16.0),
-        ),
-      ),
-      onDaySelected: _onDaySelected,
-      onVisibleDaysChanged: _onVisibleDaysChanged,
     );
   }
 
@@ -199,37 +175,38 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             ),
           );
         },
-        markersBuilder: (context, date, events, holidays) {
-          final children = <Widget>[];
 
-          if (events.isNotEmpty) {
-            children.add(
-              Positioned(
-                right: 1,
-                bottom: 1,
-                child: _buildEventsMarker(date, events),
-              ),
-            );
+
+        singleMarkerBuilder: (context, date, event) {
+          if ((event as Event).status == EventStatus.morning) {
+            color = Colors.green[300];
           }
-
-          if (holidays.isNotEmpty) {
-            children.add(
-              Positioned(
-                right: -2,
-                top: -2,
-                child: _buildHolidaysMarker(),
-              ),
-            );
+          if ((event as Event).status == EventStatus.tarde) {
+            color = Colors.blue[300];
           }
+          if ((event as Event).status == EventStatus.noche) {
+            color = Colors.red[300];
+          } 
 
-          return children;
+           if ((event as Event).status == EventStatus.noche) {
+            color = Colors.red[300];
+          } 
+
+          return Container(
+            width: 35.0,
+            height: 35.0,
+            color: color,
+             margin: const EdgeInsets.all(2.0),
+          child: Center(child: Text('${date.day}')),
+
+          );
+
+          
         },
       ),
       onDaySelected: (date, events) {
         _onDaySelected(date, events);
         _animationController.forward(from: 0.0);
-
-
       },
       onVisibleDaysChanged: _onVisibleDaysChanged,
     );
@@ -242,7 +219,9 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         shape: BoxShape.rectangle,
         color: _calendarController.isSelected(date)
             ? Colors.brown[500]
-            : _calendarController.isToday(date) ? Colors.brown[300] : Colors.blue[400],
+            : _calendarController.isToday(date)
+                ? Colors.brown[300]
+                : Colors.blue[400],
       ),
       width: 16.0,
       height: 16.0,
@@ -266,25 +245,40 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     );
   }
 
-
   Widget _buildEventList() {
     return ListView(
       children: _selectedEvents
           .map((event) => Container(
-        decoration: BoxDecoration(
-          border: Border.all(width: 0.8),
-          borderRadius: BorderRadius.circular(12.0),
-        ),
-        margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-        child: ListTile(
-          title: Text(event.toString()),
-          onTap: () => print('$event tapped!'),
-        ),
-      ))
+                decoration: BoxDecoration(
+                  border: Border.all(width: 0.8),
+                  borderRadius: BorderRadius.circular(12.0),
+                ),
+                margin:
+                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                child: ListTile(
+                  title: Text(event.toString()),
+                  onTap: () => print('$event tapped!'),
+                ),
+              ))
           .toList(),
     );
   }
 }
 
+class Event {
+  final String text;
+  final EventStatus status;
 
+  const Event({
+    @required this.text,
+    this.status = EventStatus.idle,
+  });
+}
 
+enum EventStatus {
+  idle,
+  active,
+  morning,
+  tarde,
+  noche,
+}

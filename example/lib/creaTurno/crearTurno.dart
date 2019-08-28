@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_colorpicker/material_picker.dart';
+import 'package:table_calendar_example/models/turno.dart';
 import 'package:table_calendar_example/util/database.dart';
-import 'package:table_calendar_example/creaTurno/turno.dart';
 import 'package:sqflite/sqflite.dart';
 
 class TurnoForm extends StatefulWidget {
